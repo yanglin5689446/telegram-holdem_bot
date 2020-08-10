@@ -1,0 +1,14 @@
+{
+  "name": "holdem",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Zion Lin",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "chokidar": "^3.4.2"
+  }
+}
