@@ -5,7 +5,7 @@ function main() {
   const workLoop = require('./app/work-loop')
 
   clearInterval(ret)
-  ret = setInterval(workLoop(update), 2000)
+  ret = setInterval(workLoop(update), 3000)
 }
 
 require('dotenv').config()
