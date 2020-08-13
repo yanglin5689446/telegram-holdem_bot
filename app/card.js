@@ -191,62 +191,53 @@ const getBestPossible = (cards) => {
 }
 
 const compare = (handA, handB) => {
-  if (handA.type !== handB.type) return handA - handB
+  if (handA.type !== handB.type) return handB.type - handA.type
   const cardsA = handA.cards
   const cardsB = handB.cards
+  let compareOrder = null
   switch (handA.type) {
     case HAND_TYPES.STRAIGHT_FLUSH:
     case HAND_TYPES.STRAIGHT:
     //PATTERN: AAAAB
-    case HAND_TYPES.FOUR_OF_A_KIND:
-      return cardsA[4].number - cardsB[4].number
+    case HAND_TYPES.FOUR_OF_A_KIND: {
+      compareOrder = [4]
+      break
+    }
     case HAND_TYPES.FLUSH:
     case HAND_TYPES.HIGH_CARD: {
-      for (let i = 4; i >= 0; i--) {
-        if (cardsA[i].number !== cardsB[i].number)
-          return cardsA[i].number - cardsB[i].number
-      }
+      compareOrder = [4, 3, 2, 1, 0]
+      break
     }
     // pattern: AABBC
     case HAND_TYPES.TWO_PAIRS: {
-      for (let i = 0; i < 5; i += 2) {
-        if (cardsA[i].number !== cardsB[i].number)
-          return cardsA[i].number - cardsB[i].number
-      }
+      compareOrder = [0, 2, 4]
+      break
     }
     // pattern: AABCD
     case HAND_TYPES.PAIRS: {
-      if (cardsA[0].number !== cardsB[0].number) {
-        return cardsA[0].number - cardsB[0].number
-      }
-      for (let i = 2; i < 5; i++) {
-        if (cardsA[i].number !== cardsB[0].number)
-          return cardsA[i].number - cardsB[i].number
-      }
+      compareOrder = [0, 4, 3, 2]
+      break
     }
     // pattern: AAABC
     case HAND_TYPES.THREE_OF_A_KIND: {
-      if (cardsA[0].number !== cardsB[0].number) {
-        return cardsA[0].number - cardsB[0].number
-      }
-      for (let i = 2; i < 5; i++) {
-        if (cardsA[i].number !== cardsB[0].number)
-          return cardsA[i].number - cardsB[i].number
-      }
+      compareOrder = [0, 4, 3, 2]
+      break
     }
 
     // pattern: AAABB
     case HAND_TYPES.FULL_HOUSE: {
-      if (cardsA[0].number !== cardsB[0].number) {
-        return cardsA[0].number - cardsB[0].number
-      } else if (cardsA[3].number !== cardsB[3].number) {
-        return cardsA[3].number - cardsB[3].number
-      }
+      compareOrder = [0, 4]
+      break
     }
 
     default:
-      return 0
+      compareOrder = [4, 3, 2, 1, 0]
   }
+  for (let i of compareOrder) {
+    if (cardsA[i].number !== cardsB[i].number)
+      return ORDER[cardsB[i].number] - ORDER[cardsA[i].number]
+  }
+  return 0
 }
 
 module.exports = {
