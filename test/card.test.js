@@ -1,11 +1,9 @@
 const card = require('../app/card.js')
-const { getBestPossible } = require('../app/card.js')
+const { getBestPossible, HAND_TYPES } = require('../app/card.js')
 
-// pair
-const testcases = [
-  {
-    type: 0,
-    cards: [
+describe('getBestPossible', () => {
+  test('resolve high card correctly', () => {
+    let cards = [
       { suit: '♠︎', number: '6' },
       { suit: '♣︎', number: 'J' },
       { suit: '♠︎', number: '9' },
@@ -13,11 +11,12 @@ const testcases = [
       { suit: '♠︎', number: '4' },
       { suit: '♠︎', number: '8' },
       { suit: '♦︎', number: '10' },
-    ],
-  },
-  {
-    type: 1,
-    cards: [
+    ]
+    let result = getBestPossible(cards)
+    expect(result.type).toBe(HAND_TYPES.HIGH_CARD);
+  });
+  test('resolve pair correctly', () => {
+    let cards = [
       { suit: '♠︎', number: '6' },
       { suit: '♣︎', number: 'J' },
       { suit: '♠︎', number: '9' },
@@ -25,11 +24,12 @@ const testcases = [
       { suit: '♠︎', number: '4' },
       { suit: '♠︎', number: '10' },
       { suit: '♦︎', number: '10' },
-    ],
-  },
-  {
-    type: 2,
-    cards: [
+    ]
+    let result = getBestPossible(cards)
+    expect(result.type).toBe(HAND_TYPES.PAIR);
+  });
+  test('resolve two pairs correctly', () => {
+    let cards = [
       { suit: '♠︎', number: '6' },
       { suit: '♣︎', number: '9' },
       { suit: '♠︎', number: '9' },
@@ -37,11 +37,12 @@ const testcases = [
       { suit: '♠︎', number: '4' },
       { suit: '♠︎', number: '10' },
       { suit: '♦︎', number: '10' },
-    ],
-  },
-  {
-    type: 3,
-    cards: [
+    ]
+    let result = getBestPossible(cards)
+    expect(result.type).toBe(HAND_TYPES.TWO_PAIRS);
+  });
+  test('resolve three of kind correctly', () => {
+    let cards = [
       { suit: '♠︎', number: '6' },
       { suit: '♣︎', number: '10' },
       { suit: '♠︎', number: '9' },
@@ -49,11 +50,12 @@ const testcases = [
       { suit: '♠︎', number: '4' },
       { suit: '♠︎', number: '10' },
       { suit: '♦︎', number: '10' },
-    ],
-  },
-  {
-    type: 4,
-    cards: [
+    ]
+    let result = getBestPossible(cards)
+    expect(result.type).toBe(HAND_TYPES.THREE_OF_A_KIND);
+  });
+  test('resolve straight correctly', () => {
+    let cards = [
       { suit: '♠︎', number: '6' },
       { suit: '♣︎', number: '7' },
       { suit: '♠︎', number: '9' },
@@ -61,11 +63,11 @@ const testcases = [
       { suit: '♠︎', number: '4' },
       { suit: '♠︎', number: '8' },
       { suit: '♦︎', number: '10' },
-    ],
-  },
-  {
-    type: 4,
-    cards: [
+    ]
+    let result = getBestPossible(cards)
+    expect(result.type).toBe(HAND_TYPES.STRAIGHT);
+
+    cards = [
       { suit: '♠︎', number: 'A' },
       { suit: '♣︎', number: '7' },
       { suit: '♠︎', number: '9' },
@@ -73,11 +75,12 @@ const testcases = [
       { suit: '♠︎', number: '4' },
       { suit: '♠︎', number: '3' },
       { suit: '♦︎', number: '5' },
-    ],
-  },
-  {
-    type: 5,
-    cards: [
+    ]
+    result = getBestPossible(cards)
+    expect(result.type).toBe(HAND_TYPES.STRAIGHT);
+  });
+  test('resolve flush correctly', () => {
+    let cards = [
       { suit: '♠︎', number: 'A' },
       { suit: '♠︎', number: '7' },
       { suit: '♠︎', number: '9' },
@@ -85,11 +88,12 @@ const testcases = [
       { suit: '♠︎', number: '4' },
       { suit: '♠︎', number: '6' },
       { suit: '♦︎', number: '5' },
-    ],
-  },
-  {
-    type: 6,
-    cards: [
+    ]
+    let result = getBestPossible(cards)
+    expect(result.type).toBe(HAND_TYPES.FLUSH);
+  });
+  test('resolve full house correctly', () => {
+    let cards = [
       { suit: '♠︎', number: '6' },
       { suit: '♣︎', number: '10' },
       { suit: '♠︎', number: '9' },
@@ -97,11 +101,12 @@ const testcases = [
       { suit: '♠︎', number: '2' },
       { suit: '♠︎', number: '10' },
       { suit: '♦︎', number: '10' },
-    ],
-  },
-  {
-    type: 7,
-    cards: [
+    ]
+    let result = getBestPossible(cards)
+    expect(result.type).toBe(HAND_TYPES.FULL_HOUSE);
+  });
+  test('resolve four of kind correctly', () => {
+    let cards = [
       { suit: '♠︎', number: 'A' },
       { suit: '♣', number: 'A' },
       { suit: '♠︎', number: '9' },
@@ -109,11 +114,12 @@ const testcases = [
       { suit: '♠︎', number: '4' },
       { suit: '♠︎', number: '3' },
       { suit: '♦︎', number: 'A' },
-    ],
-  },
-  {
-    type: 8,
-    cards: [
+    ]
+    let result = getBestPossible(cards)
+    expect(result.type).toBe(HAND_TYPES.FOUR_OF_A_KIND);
+  });
+  test('resolve straight flush correctly', () => {
+    let cards = [
       { suit: '♠︎', number: 'A' },
       { suit: '♣', number: 'A' },
       { suit: '♠︎', number: '10' },
@@ -121,12 +127,9 @@ const testcases = [
       { suit: '♠︎', number: 'J' },
       { suit: '♠︎', number: 'Q' },
       { suit: '♠︎', number: 'K' },
-    ],
-  },
-]
+    ]
+    let result = getBestPossible(cards)
+    expect(result.type).toBe(HAND_TYPES.STRAIGHT_FLUSH);
+  });
+});
 
-testcases.forEach((testcase) => {
-  const result = getBestPossible(testcase.cards)
-  console.log(result.cards)
-  console.log(`Expected type: ${testcase.type}, actual type: ${result.type}`)
-})
