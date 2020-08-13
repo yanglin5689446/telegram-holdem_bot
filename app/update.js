@@ -120,7 +120,7 @@ class Game {
     const survivors = this.participants
       .filter((participant) => !participant.fold)
       .map((participant) => ({
-        ....participant,
+        ...participant,
         hand: getBestPossible([...participant.cards, ...this.faceUpCards]),
       }))
 
@@ -264,6 +264,7 @@ class Room {
     this.participants = [this.createParticipant(holder)]
     this.started = false
     this.game = null
+    this.infoBuffer = ''
   }
   createParticipant(user) {
     return {
@@ -283,7 +284,14 @@ class Room {
     this.participants.push(this.createParticipant(user))
   }
   info(text) {
-    sendMessage({ chat_id: this.id, text })
+    this.infoBuffer += text + '\n'
+    if (!this.infoTimeout) {
+      this.infoTimeout = setTimeout(() => {
+        sendMessage({ chat_id: this.id, text: this.infoBuffer })
+        this.infoTimeout = null
+        this.infoBuffer = ''
+      }, 100)
+    }
   }
   initGame() {
     this.started = true
