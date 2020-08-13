@@ -28,7 +28,7 @@ const HAND_TYPES = {
   STRAIGHT: 4,
   FLUSH: 5,
   FULL_HOUSE: 6,
-  FOUR_OR_A_KIND: 7,
+  FOUR_OF_A_KIND: 7,
   STRAIGHT_FLUSH: 8,
 }
 
@@ -40,7 +40,7 @@ const HAND_TYPE_NAMES = {
   [HAND_TYPES.STRAIGHT]: 'Straight',
   [HAND_TYPES.FLUSH]: 'Flush',
   [HAND_TYPES.FULL_HOUSE]: 'Full House',
-  [HAND_TYPES.FOUR_OR_A_KIND]: 'Four Of A Kind',
+  [HAND_TYPES.FOUR_OF_A_KIND]: 'Four Of A Kind',
   [HAND_TYPES.STRAIGHT_FLUSH]: 'Straight Flush',
 }
 
@@ -198,7 +198,7 @@ const compare = (handA, handB) => {
     case HAND_TYPES.STRAIGHT_FLUSH:
     case HAND_TYPES.STRAIGHT:
     //PATTERN: AAAAB
-    case HAND_TYPES.FOUR_OR_A_KIND:
+    case HAND_TYPES.FOUR_OF_A_KIND:
       return cardsA[4].number - cardsB[4].number
     case HAND_TYPES.FLUSH:
     case HAND_TYPES.HIGH_CARD: {
