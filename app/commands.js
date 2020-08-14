@@ -9,5 +9,7 @@ module.exports = {
   CALL: '/call',
   RAISE: '/raise',
   ALL_IN: '/all_in',
+
   BALANCE: '/balance',
+  POT: '/pot',
 }

@@ -26,6 +26,11 @@ class Game {
     this.destructor = destructor
     this.info = info
   }
+
+  get pot() {
+    return this.participants.reduce((total, user) => total + user.bet, 0)
+  }
+
   gameOver() {
     this.broadcast('Game Over')
     this.destructor()
@@ -74,7 +79,6 @@ class Game {
     const amount = winner.bet
 
     this.participants.forEach((participant) => {
-      participant.balance += participant.bet - amount
       participant.bet = 0
       participant.cards = []
       participant.fold = false
@@ -199,6 +203,11 @@ class Game {
     }
     // if the actions is valid
     if (ok) {
+      const survivors = participants.filter((p) => !p.fold)
+      if (survivors.length === 1) {
+        this.endRound(survivors[0])
+        return
+      }
       // find next user
       do {
         this.current = (this.current + 1) % participants.length
@@ -215,11 +224,6 @@ class Game {
       ) {
         const pot = participants.reduce((acc, { bet }) => acc + bet, 0)
         this.info(`Betting round finish, current pot: ${pot}`)
-        const survivors = participants.filter((p) => !p.fold)
-        if (survivors.length === 1) {
-          this.endRound(survivors[0])
-          return
-        }
         if (this.faceUpCards.length === 5) {
           this.checkWinner()
         }
@@ -398,6 +402,17 @@ const update = ({ message }) => {
             "Unable to check the balance. Either the game not started or you didn't join the game"
           )
         }
+        break
+      }
+      case COMMANDS.POT: {
+        if (!checkGameCreated(chat)) break
+        if (!rooms[chat.id].started) {
+          rooms[chat.id].info("The game haven't started yet")
+          break
+        }
+
+        rooms[chat.id].info(`Current Pot: ${rooms[chat.id].game.pot}`)
+        break
       }
     }
   }
