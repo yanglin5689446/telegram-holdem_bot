@@ -103,7 +103,15 @@ const resolvers = [
     const deduped = cards.filter(
       (card, index) => index === 0 || card.number !== cards[index - 1].number
     )
-    // @todo: take A2345 into consideration
+
+    // special check for A2345
+    let result = []
+    for (let i of [12, 0, 1, 2, 3]) {
+      const found = deduped.find((card) => ORDER[card.number] === i)
+      if (found) result.push(found)
+    }
+    if (result.length === 5) return result
+
     for (let i = deduped.length; i >= 5; i--) {
       const take5 = deduped.slice(i - 5, i)
       const isStraight = take5.every(
@@ -114,6 +122,7 @@ const resolvers = [
       )
       if (isStraight) return take5
     }
+
     return null
   },
   function flushResolver(cards) {
