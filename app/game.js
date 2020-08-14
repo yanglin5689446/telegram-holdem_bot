@@ -15,6 +15,7 @@ class Game {
     this.sb = 10
     this.starter = 0
     this.current = 0
+    this.last = 0
     this.currentBet = 0
     this.deck = null
     this.faceUpCards = []
@@ -60,6 +61,7 @@ class Game {
     this.dealCard(2)
     this.currentBet = bb
     this.current = third
+    this.last = third
     this.broadcast(
       (participant) =>
         `Your card: ${participant.cards
@@ -71,8 +73,7 @@ class Game {
   }
 
   endRound(winner) {
-    winner.balance += winner.bet * this.participants.length
-    const amount = winner.bet
+    winner.balance += this.pot
 
     this.participants.forEach((participant) => {
       participant.bet = 0
@@ -184,6 +185,7 @@ class Game {
         ok = this.bet(participants[this.current], raiseAmount)
         if (ok) {
           this.currentBet = participants[this.current].bet
+          this.last = this.current
         }
         break
       case COMMANDS.CHECK:
@@ -194,34 +196,37 @@ class Game {
           participants[this.current],
           this.participants[this.current].balance
         )
+        if (participants[this.current].bet > this.currentBet) {
+          this.currentBet = participants[this.current].bet
+          this.last = this.current
+        }
         participants[this.current].allIn = true
         break
     }
     // if the actions is valid
     if (ok) {
+      // check if everybody folds cards
       const survivors = participants.filter((p) => !p.fold)
       if (survivors.length === 1) {
         this.endRound(survivors[0])
         return
       }
+
       // find next user
+      const inactive = (user) => user.fold || user.allIn
       do {
         this.current = (this.current + 1) % participants.length
       } while (
-        (participants[this.current].fold || participants[this.current].allIn) &&
-        this.current !== this.starter
+        inactive(participants[this.current]) &&
+        this.current !== this.last
       )
 
       // check bet round end
-      if (
-        this.current === this.starter &&
-        (participants[this.current].bet === this.currentBet ||
-          participants[this.current].allIn)
-      ) {
-        const pot = participants.reduce((acc, { bet }) => acc + bet, 0)
-        this.info(`Betting round finish, current pot: ${pot}`)
+      if (this.current === this.last) {
+        this.info(`Betting round finish, current pot: ${this.pot}`)
         if (this.faceUpCards.length === 5) {
           this.checkWinner()
+          return
         }
 
         if (this.faceUpCards.length === 0) {
@@ -234,11 +239,12 @@ class Game {
             .map(({ suit, number }) => `${suit} ${number}`)
             .join(' ')}`
         )
+        this.current = this.starter
+        while (inactive(participants[this.current]))
+          this.current = (this.current + 1) % participants.length
+        this.last = this.current
       }
-      setTimeout(
-        () => this.info(`It's ${this.participants[this.current].name}'s turn`),
-        500
-      )
+      this.info(`It's ${this.participants[this.current].name}'s turn`)
     } else {
       this.info('Invalid Action')
     }

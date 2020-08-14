@@ -1,3 +1,4 @@
+const COMMANDS = require('../app/commands.js')
 const Game = require('../app/game.js')
 
 class InfoMock {
@@ -11,7 +12,8 @@ class InfoMock {
 }
 
 describe('Game class', () => {
-  let participants
+  let participants, headcount
+  const initialBalance = 1000
   const destructor = jest.fn()
   const infoMock = new InfoMock()
   beforeEach(() => {
@@ -22,11 +24,13 @@ describe('Game class', () => {
     ].map(({ id, name }) => ({
       id,
       name,
+      balance: initialBalance,
       cards: [],
       fold: false,
       bet: 0,
       allIn: false,
     }))
+    headcount = participants.length
   })
 
   describe('when starting a new round', () => {
@@ -35,13 +39,84 @@ describe('Game class', () => {
       game.startRound()
 
       expect(game.starter).toBe(1)
-      const headcount = participants.length
-      expect(game.participants[1].balance).toBe(game.balance - game.sb)
+      expect(game.participants[1].balance).toBe(initialBalance - game.sb)
       expect(game.participants[1].bet).toBe(game.sb)
       expect(game.participants[(1 + 1) % headcount].balance).toBe(
-        game.balance - game.bb
+        initialBalance - game.bb
       )
       expect(game.participants[(1 + 1) % headcount].bet).toBe(game.bb)
+    })
+  })
+
+  describe('when in betting round', () => {
+    let game = null
+    beforeEach(() => {
+      game = new Game({ participants, destructor, info: infoMock.info })
+      game.startRound()
+    })
+    test("users' actions works correctly", () => {
+      // participants 1 is sb, can't check
+      game.act(participants[1], COMMANDS.CHECK, {})
+      expect(game.current).toBe(1)
+
+      game.act(participants[1], COMMANDS.CALL, {})
+      let next = (1 + 1) % headcount
+      expect(game.current).toBe(next)
+
+      game.act(participants[next], COMMANDS.RAISE, {})
+      next = (next + 1) % headcount
+      expect(game.current).toBe(next)
+
+      game.act(participants[next], COMMANDS.RAISE, {})
+      next = (next + 1) % headcount
+      expect(game.current).toBe(next)
+
+      game.act(participants[next], COMMANDS.CHECK, {})
+      expect(game.current).toBe(next)
+
+      game.act(participants[next], COMMANDS.CALL, {})
+      next = (next + 1) % headcount
+      expect(game.current).toBe(next)
+    })
+  })
+
+  describe('when ending a round', () => {
+    test('starts a new round correctly', () => {
+      const game = new Game({ participants, destructor, info: infoMock.info })
+
+      participants.forEach((participant) => {
+        expect(participant.bet).toBe(0)
+        expect(participant.fold).toBe(false)
+        expect(participant.allIn).toBe(false)
+        expect(participant.cards.length).toBe(0)
+      })
+
+      game.startRound()
+
+      expect(game.starter).toBe(1)
+      expect(game.current).toBe(1)
+      expect(game.currentBet).toBe(game.bb)
+      expect(game.deck.length).toBe(52 - 2 * headcount)
+      expect(game.faceUpCards.length).toBe(0)
+
+      game.endRound(participants[0])
+
+      participants.forEach((participant) => {
+        expect(participant.bet).toBe(0)
+        expect(participant.fold).toBe(false)
+        expect(participant.allIn).toBe(false)
+        expect(participant.cards.length).toBe(0)
+      })
+
+      game.startRound()
+
+      let next = (1 + 1) % headcount
+
+      expect(game.starter).toBe(next)
+      expect(game.current).toBe(next)
+      expect(game.currentBet).toBe(game.bb)
+      expect(game.deck.length).toBe(52 - 2 * headcount)
+      expect(game.faceUpCards.length).toBe(0)
     })
   })
 })
