@@ -27,7 +27,7 @@ const update = ({ message }) => {
     const command = tokenized[0].split('@')[0]
     switch (command) {
       case COMMANDS.NEW: {
-        if (chat.type !== 'group') return
+        if (chat.type !== 'group' && chat.type !== 'supergroup') return
         if (!room) {
           room = new Room({ id: chat.id, holder: user })
           room.info('New game room created')
