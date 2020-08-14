@@ -138,16 +138,6 @@ describe('compare', () => {
     let handA = {
       type: HAND_TYPES.HIGH_CARD,
       cards: [
-        { suit: '♠︎', number: '2' },
-        { suit: '♠︎', number: '5' },
-        { suit: '♠︎', number: '6' },
-        { suit: '♠︎', number: '7' },
-        { suit: '♥︎', number: 'A' },
-      ],
-    }
-    let handB = {
-      type: HAND_TYPES.HIGH_CARD,
-      cards: [
         { suit: '♠︎', number: '3' },
         { suit: '♠︎', number: '8' },
         { suit: '♠︎', number: 'J' },
@@ -155,7 +145,42 @@ describe('compare', () => {
         { suit: '♥︎', number: 'K' },
       ],
     }
+    let handB = {
+      type: HAND_TYPES.HIGH_CARD,
+      cards: [
+        { suit: '♠︎', number: '2' },
+        { suit: '♠︎', number: '5' },
+        { suit: '♠︎', number: '6' },
+        { suit: '♠︎', number: '7' },
+        { suit: '♥︎', number: 'A' },
+      ],
+    }
     let result = compare(handA, handB)
-    expect(result).not.toBeGreaterThan(0)
+    expect(result).toBeGreaterThan(0)
+  })
+
+  test('compare pairs correctly', () => {
+    let handA = {
+      type: HAND_TYPES.PAIR,
+      cards: [
+        { suit: '♦︎', number: '6' },
+        { suit: '♠︎', number: '6' },
+        { suit: '♠︎', number: 'J' },
+        { suit: '♠︎', number: 'Q' },
+        { suit: '♥︎', number: 'K' },
+      ],
+    }
+    let handB = {
+      type: HAND_TYPES.PAIR,
+      cards: [
+        { suit: '♣︎', number: 'K' },
+        { suit: '♠', number: 'Q' },
+        { suit: '♠︎', number: 'J' },
+        { suit: '♥︎', number: '10' },
+        { suit: '♥︎', number: 'J' },
+      ],
+    }
+    let result = compare(handA, handB)
+    expect(result).toBeGreaterThan(0)
   })
 })

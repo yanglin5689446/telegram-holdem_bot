@@ -223,13 +223,13 @@ const compare = (handA, handB) => {
       break
     }
     // pattern: AABCD
-    case HAND_TYPES.PAIRS: {
+    case HAND_TYPES.PAIR: {
       compareOrder = [0, 4, 3, 2]
       break
     }
     // pattern: AAABC
     case HAND_TYPES.THREE_OF_A_KIND: {
-      compareOrder = [0, 4, 3, 2]
+      compareOrder = [0, 4, 3]
       break
     }
 
