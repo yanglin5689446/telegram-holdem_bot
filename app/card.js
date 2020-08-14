@@ -84,7 +84,7 @@ const resolvers = [
     let result = null
     const clone = cards.slice()
 
-    for (let i = clone.length; i >= 2; i--) {
+    for (let i = clone.length; i >= 3; i--) {
       if (
         clone[i - 1].number === clone[i - 2].number &&
         clone[i - 2].number === clone[i - 3].number
