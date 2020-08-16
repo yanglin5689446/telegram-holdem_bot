@@ -17,12 +17,13 @@ const checkGameCreated = (chat) => {
   return true
 }
 
-const update = ({ message }) => {
-  const { from: user, chat, text } = message
+const update = ({ message, edited_message }) => {
+  const source = message || edited_message
+  const { from: user, chat, text } = source
 
   let room = Room.get(chat.id)
 
-  if (isCommand(message)) {
+  if (isCommand(source)) {
     const tokenized = text.split(' ')
     const command = tokenized[0].split('@')[0]
     switch (command) {
