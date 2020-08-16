@@ -223,6 +223,10 @@ class Game {
 
       // check bet round end
       if (this.current === this.last) {
+        if (participants.every(inactive)) {
+          while (this.faceUpCards.length !== 5) this.flop(1)
+        }
+
         this.info(`Betting round finish, current pot: ${this.pot}`)
         if (this.faceUpCards.length === 5) {
           this.checkWinner()
