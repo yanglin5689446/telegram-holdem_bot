@@ -78,7 +78,7 @@ const update = ({ message, edited_message }) => {
           room.info("The game haven't started yet")
           break
         }
-        room.game.act(user, command, { amount: tokenized[1] })
+        room.game.act(user, command, { amount: parseInt(tokenized[1]) || 1 })
         break
       case COMMANDS.BALANCE: {
         if (!checkGameCreated(chat)) break
