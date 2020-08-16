@@ -8,6 +8,7 @@ const {
   compare,
 } = require('./card')
 const debug = require('./debug')
+const utils = require('./utils')
 
 class Game {
   constructor({ participants, destructor, info, deleteInfo }) {
@@ -74,9 +75,10 @@ class Game {
     this.info(`It's ${this.participants[third].name}'s turn`)
   }
 
-  endRound(winner) {
-    winner.balance += this.pot
-
+  endRound(winnerIds) {
+    let winners = this.participants.filter(
+      (p, index) => p.id === winnerIds[index]);
+    utils.distributePrize(winners, this.participants);
     this.participants.forEach((participant) => {
       participant.bet = 0
       participant.cards = []
@@ -84,7 +86,8 @@ class Game {
       participant.allIn = false
     })
     this.faceUpCards = []
-    this.info(`Winner of this round is ${winner.name}`)
+    let winnersName = winners.map((winner) => winner.name).join(', ');
+    this.info(`Winners of this round is ${winnersName}`)
     if (this.participants.some((participant) => participant.balance <= 0)) {
       this.gameOver()
     } else {
@@ -144,10 +147,15 @@ class Game {
 
     survivors.sort((a, b) => compare(a.hand, b.hand))
 
-    // @todo: handle end-in-a-draw situation
-    const winner = this.participants.find((p) => p.id === survivors[0].id)
+    let winnerCards = survivors[0].hand.cards;
+    let winnerIds = [];
+    survivors.forEach((survivor) => {
+      const isTie = survivor.hand.cards.every(
+        (card, index) => card.number === winnerCards[index].number);
+      if (isTie) winnersIds.push(survivor.id);
+    });
 
-    this.endRound(winner)
+    this.endRound(winnerIds)
   }
 
   bet(user, amount) {
@@ -180,10 +188,12 @@ class Game {
         participants[this.current].fold = true
         break
       case COMMANDS.CALL:
+        let user = participants[this.current];
         ok = this.bet(
-          participants[this.current],
+          user,
           this.currentBet - participants[this.current].bet
         )
+        user.allIn = user.balance === 0;
         break
       case COMMANDS.RAISE:
         const raiseAmount =
@@ -215,7 +225,7 @@ class Game {
       // check if everybody folds cards
       const survivors = participants.filter((p) => !p.fold)
       if (survivors.length === 1) {
-        this.endRound(survivors[0])
+        this.endRound([survivors[0].id])
         return
       }
 

@@ -99,7 +99,7 @@ describe('Game class', () => {
       expect(game.deck.length).toBe(52 - 2 * headcount)
       expect(game.faceUpCards.length).toBe(0)
 
-      game.endRound(participants[0])
+      game.endRound([participants[0].id])
 
       participants.forEach((participant) => {
         expect(participant.bet).toBe(0)
