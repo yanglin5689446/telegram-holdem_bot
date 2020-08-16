@@ -146,7 +146,7 @@ class Game {
   }
 
   bet(user, amount) {
-    const available = user.balance - amount >= 0
+    const available = user.balance - amount >= 0 && amount > 0
     if (available) {
       user.balance -= amount
       user.bet += amount
