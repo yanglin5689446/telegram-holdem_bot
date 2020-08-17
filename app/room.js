@@ -46,7 +46,6 @@ class Room {
     }
   }
   deleteInfo() {
-    console.log('last message id: ', this.lastMessageId)
     deleteMessage({ chat_id: this.id, message_id: this.lastMessageId }).catch(
       console.error
     )

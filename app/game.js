@@ -1,5 +1,5 @@
 const COMMANDS = require('./commands')
-const { sendMessage } = require('./api')
+const { sendMessage, deleteMessage } = require('./api')
 const {
   HAND_TYPE_NAMES,
   SUITS,
@@ -23,6 +23,7 @@ class Game {
     this.destructor = destructor
     this.info = info
     this.deleteInfo = deleteInfo
+    this.lastBroadcastedMessages = []
   }
 
   get pot() {
@@ -90,6 +91,9 @@ class Game {
       this.info('New round will start in 5 seconds')
       setTimeout(this.startRound.bind(this), 5000)
     }
+
+    // delete previous card
+    this.lastBroadcastedMessages.forEach((message) => deleteMessage(message))
   }
 
   createDeck() {
@@ -259,15 +263,23 @@ class Game {
   }
 
   broadcast(action) {
-    if (typeof action === 'string') {
-      this.participants.forEach((participant) =>
-        sendMessage({ chat_id: participant.id, text: action })
+    Promise.all(
+      this.participants.map((participant) =>
+        sendMessage({
+          chat_id: participant.id,
+          text: typeof action === 'string' ? action : action(participant),
+        })
       )
-    } else if (typeof action === 'function') {
-      this.participants.forEach((participant) =>
-        sendMessage({ chat_id: participant.id, text: action(participant) })
+    )
+      .then((responses) =>
+        Promise.all(responses.map((response) => response.json()))
       )
-    }
+      .then((data) => {
+        this.lastBroadcastedMessages = data.map(({ result }) => ({
+          chat_id: result.chat.id,
+          message_id: result.message_id,
+        }))
+      })
   }
 }
 
