@@ -29,7 +29,7 @@ class Game {
   }
 
   gameOver() {
-    this.broadcast('Game Over')
+    this.info('Game Over')
     this.destructor()
   }
 
