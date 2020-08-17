@@ -10,7 +10,7 @@ const {
 const debug = require('./debug')
 
 class Game {
-  constructor({ participants, destructor, info }) {
+  constructor({ participants, destructor, info, deleteInfo }) {
     this.bb = 20
     this.sb = 10
     this.starter = 0
@@ -22,6 +22,7 @@ class Game {
     this.participants = participants
     this.destructor = destructor
     this.info = info
+    this.deleteInfo = deleteInfo
   }
 
   get pot() {
@@ -154,6 +155,7 @@ class Game {
     return available
   }
   act(user, command, { amount = 1 }) {
+    this.deleteInfo()
     const { participants, sb } = this
     let ok = true
 
@@ -203,6 +205,7 @@ class Game {
         participants[this.current].allIn = true
         break
     }
+    let responseMessage
     // if the actions is valid
     if (ok) {
       // check if everybody folds cards
@@ -248,10 +251,11 @@ class Game {
           this.current = (this.current + 1) % participants.length
         this.last = this.current
       }
-      this.info(`It's ${this.participants[this.current].name}'s turn`)
+      responseMessage = `It's ${this.participants[this.current].name}'s turn`
     } else {
-      this.info('Invalid Action')
+      responseMessage = 'Invalid Action'
     }
+    setTimeout(() => this.info(responseMessage), 100)
   }
 
   broadcast(action) {

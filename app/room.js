@@ -1,5 +1,5 @@
 const Game = require('./game')
-const { sendMessage } = require('./api')
+const { sendMessage, deleteMessage } = require('./api')
 const { nameResolver } = require('./utils')
 
 class Room {
@@ -10,6 +10,7 @@ class Room {
     this.started = false
     this.game = null
     this.infoBuffer = ''
+    this.lastMessageId = null
     rooms[id] = this
   }
   createParticipant(user) {
@@ -34,10 +35,21 @@ class Room {
     if (!this.infoTimeout) {
       this.infoTimeout = setTimeout(() => {
         sendMessage({ chat_id: this.id, text: this.infoBuffer })
+          .then((response) => response.json())
+          .then((json) => {
+            this.lastMessageId = json.result.message_id
+          })
+          .catch(console.error)
         this.infoTimeout = null
         this.infoBuffer = ''
       }, 100)
     }
+  }
+  deleteInfo() {
+    console.log('last message id: ', this.lastMessageId)
+    deleteMessage({ chat_id: this.id, message_id: this.lastMessageId }).catch(
+      console.error
+    )
   }
   initGame() {
     this.started = true
@@ -45,6 +57,7 @@ class Room {
       participants: this.participants,
       destructor: this.destroy.bind(this),
       info: this.info.bind(this),
+      deleteInfo: this.deleteInfo.bind(this),
     })
     this.game.startRound()
   }

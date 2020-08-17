@@ -11,10 +11,12 @@ const makeAPI = (endpoint) => (params) => {
 }
 
 const sendMessage = makeAPI('sendMessage')
+const deleteMessage = makeAPI('deleteMessage')
 const getUpdates = makeAPI('getUpdates')
 
 module.exports = {
   API_URL,
   sendMessage,
+  deleteMessage,
   getUpdates,
 }
