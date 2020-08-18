@@ -76,9 +76,8 @@ class Game {
   }
 
   endRound(winnerIds) {
-    let winners = this.participants.filter(
-      (p, index) => p.id === winnerIds[index]);
-    utils.distributePrize(winners, this.participants);
+    let winners = this.participants.filter((p) => winnerIds.includes(p.id))
+    utils.distributePrize(winners, this.participants)
     this.participants.forEach((participant) => {
       participant.bet = 0
       participant.cards = []
@@ -86,7 +85,7 @@ class Game {
       participant.allIn = false
     })
     this.faceUpCards = []
-    let winnersName = winners.map((winner) => winner.name).join(', ');
+    let winnersName = winners.map((winner) => winner.name).join(', ')
     this.info(`Winners of this round is ${winnersName}`)
     if (this.participants.some((participant) => participant.balance <= 0)) {
       this.gameOver()
@@ -147,13 +146,14 @@ class Game {
 
     survivors.sort((a, b) => compare(a.hand, b.hand))
 
-    let winnerCards = survivors[0].hand.cards;
-    let winnerIds = [];
+    let winnerCards = survivors[0].hand.cards
+    let winnerIds = []
     survivors.forEach((survivor) => {
       const isTie = survivor.hand.cards.every(
-        (card, index) => card.number === winnerCards[index].number);
-      if (isTie) winnersIds.push(survivor.id);
-    });
+        (card, index) => card.number === winnerCards[index].number
+      )
+      if (isTie) winnerIds.push(survivor.id)
+    })
 
     this.endRound(winnerIds)
   }
@@ -188,12 +188,9 @@ class Game {
         participants[this.current].fold = true
         break
       case COMMANDS.CALL:
-        let user = participants[this.current];
-        ok = this.bet(
-          user,
-          this.currentBet - participants[this.current].bet
-        )
-        user.allIn = user.balance === 0;
+        let user = participants[this.current]
+        ok = this.bet(user, this.currentBet - participants[this.current].bet)
+        user.allIn = user.balance === 0
         break
       case COMMANDS.RAISE:
         const raiseAmount =
