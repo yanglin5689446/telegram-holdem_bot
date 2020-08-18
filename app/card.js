@@ -1,4 +1,4 @@
-const SUITS = ['♣︎', '♦︎', '♥︎', '♠︎']
+const SUITS = ['♣️', '♦️', '♥️', '♠️']
 
 const NUMBERS = [
   'A',
