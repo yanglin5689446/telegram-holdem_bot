@@ -72,7 +72,10 @@ class Game {
           .join(' ')}`
     )
 
-    this.info(`It's ${this.participants[third].name}'s turn`)
+    setTimeout(
+      () => this.info(`It's ${this.participants[third].name}'s turn`),
+      300
+    )
   }
 
   endRound(winnerIds) {
