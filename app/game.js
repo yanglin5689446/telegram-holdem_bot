@@ -20,7 +20,8 @@ class Game {
     this.currentBet = 0
     this.deck = null
     this.faceUpCards = []
-    this.participants = participants
+    this.allParticipants = participants
+    this.participants = [...participants]
     this.destructor = destructor
     this.info = info
     this.deleteInfo = deleteInfo
@@ -38,6 +39,7 @@ class Game {
 
   startRound() {
     this.info('New round started')
+    this.participants = [...this.allParticipants]
     const { bb, sb, participants } = this
     this.starter = (this.starter + 1) % participants.length
     const next = (this.starter + 1) % participants.length

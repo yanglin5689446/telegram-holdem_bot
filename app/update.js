@@ -40,11 +40,6 @@ const update = ({ message, edited_message }) => {
       case COMMANDS.JOIN: {
         if (!checkGameCreated(chat)) break
 
-        if (room.started) {
-          room.info('The game has started')
-          break
-        }
-
         if (room.getParticipant(user)) {
           room.info('You have already joined the game')
         } else {
