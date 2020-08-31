@@ -230,18 +230,8 @@ class Game {
 
       // check bet round end
       if (this.current === this.last) {
-        let activeCount = 0
-        participants.forEach((participant) => {
-          activeCount += !inactive(participant)
-        })
-        // if less than one people active, then flop to end
-        if (activeCount <= 1) {
-          while (this.faceUpCards.length !== 5) {
-            if (this.faceUpCards.length == 0)
-              this.flop(3)
-            else
-              this.flop(1)
-          }
+        if (participants.every(inactive)) {
+          while (this.faceUpCards.length !== 5) this.flop(1)
         }
 
         this.info(`Betting round finish, current pot: ${this.pot}`)
