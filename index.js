@@ -1,43 +1,23 @@
-let ret = null
-
-function main() {
-  const update = require('./app/update')
-  const workLoop = require('./app/work-loop')
-
-  clearInterval(ret)
-  ret = setInterval(workLoop(update), 300)
-}
-
+const { setWebhook } = require('./app/api')
+const express = require('express')
+const app = express()
 require('dotenv').config()
-main()
 
-if (process.env.NODE_ENV !== 'production') {
-  const chokidar = require('chokidar')
+app.use(express.json())
 
-  //Set up watcher to watch all files in ./server/app
-  const watcher = chokidar.watch('./app')
+app.post('/', function (req, res) {
+  const update = require('./app/update')
+  console.log(req.body)
+  res.send(req.body)
+  update(req.body)
+})
 
-  watcher.on('ready', function () {
-    //On any file change event
-    //You could customise this to only run on new/save/delete etc
-    //This will also pass the file modified into the callback
-    //however for this example we aren't using that information
-    watcher.on('all', function () {
-      console.log('Reloading server...')
-      //Loop through the cached modules
-      //The "id" is the FULL path to the cached module
-      Object.keys(require.cache).forEach(function (id) {
-        //Get the local path to the module
-        const localId = id.substr(process.cwd().length)
-
-        //Ignore anything not in server/app
-        if (!localId.match(/^\/app\//)) return
-
-        //Remove the module from the cache
-        delete require.cache[id]
-      })
-      main()
-      console.log('Server reloaded.')
-    })
-  })
-}
+app.listen(process.env.PORT, () => {
+  console.log(`App listening at port: ${process.env.PORT}`)
+  // setWebhook with empty param will reset webhook
+  setWebhook({}).then(() =>
+    setWebhook({ url: process.env.CALLBACK_URL })
+      .then((response) => response.json())
+      .then(console.log)
+  )
+})
